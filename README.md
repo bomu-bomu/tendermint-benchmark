@@ -32,7 +32,7 @@
     go run RESTAPI/main.go
     ```
     
-### How to send request to Quorum API
+### How to send request to API
    use [loadtest project](https://github.com/the-hulk-id/loadtest)
  ```sh
  # clone from https://github.com/the-hulk-id/loadtest
@@ -45,3 +45,6 @@ get PubKey from pub_key.data in priv_validator.json
 ```sh
 curl -s 'localhost:46657/broadcast_tx_commit?tx="val:PubKey"'
 ```
+
+## Result
+you can get result in result.csv
