@@ -1,5 +1,12 @@
 # Tendermint Benchmark
 
+## Install dependency
+    ```sh
+    cd $GOPATH/src/github.com/oatsaysai/tendermint-benchmark/abci
+    
+    dep ensure
+    ```
+
 ## How to run
 1.  Run ABCI server
 
