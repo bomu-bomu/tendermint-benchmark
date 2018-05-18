@@ -5,3 +5,5 @@
 
 vendor/
 Gopkg.lock
+
+result.csv
