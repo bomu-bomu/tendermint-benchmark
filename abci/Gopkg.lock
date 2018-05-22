@@ -97,6 +97,12 @@
   revision = "d476054b5d83e64a30860ccc858a121ad8df11e0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/oatsaysai/tendermint-benchmark"
+  packages = ["abci/did"]
+  revision = "5629126c88f053674881c66b99c3ab51a0700711"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -252,6 +258,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3ee6a991dc419f9efb0c0e9fcc0f9a2b895a2110d1aad487b214b657296e3859"
+  inputs-digest = "9dd453f87ee6a635c037fb4e909a2f5f318e0f8c3ab108a88846be0e97f5b141"
   solver-name = "gps-cdcl"
   solver-version = 1
