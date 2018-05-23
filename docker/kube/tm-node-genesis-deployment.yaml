@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.13.0 (84fa826)
   creationTimestamp: null
   labels:
-    io.kompose.service: tm-node-0
-  name: tm-node-0
+    io.kompose.service: tm-node-genesis
+  name: tm-node-genesis
 spec:
   replicas: 1
   strategy: {}
@@ -15,7 +15,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        io.kompose.service: tm-node-0
+        io.kompose.service: tm-node-genesis
     spec:
       containers:
       - args:
@@ -27,7 +27,7 @@ spec:
         - name: TM_RPC_PORT
           value: "45000"
         image: watcharaphat/tendermint:latest
-        name: tm-node-0
+        name: tm-node-genesis
         ports:
         - containerPort: 45000
         - containerPort: 47000

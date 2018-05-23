@@ -6,8 +6,8 @@ metadata:
     kompose.version: 1.13.0 (84fa826)
   creationTimestamp: null
   labels:
-    io.kompose.service: tm-node-0
-  name: tm-node-0
+    io.kompose.service: tm-node-genesis
+  name: tm-node-genesis
 spec:
   ports:
   - name: "45000"
@@ -17,6 +17,6 @@ spec:
     port: 47000
     targetPort: 47000
   selector:
-    io.kompose.service: tm-node-0
+    io.kompose.service: tm-node-genesis
 status:
   loadBalancer: {}

@@ -2,7 +2,7 @@ version: '3'
 services:
 
   # genesis node
-  tm-node-0:
+  tm-node-genesis:
     image: watcharaphat/tendermint:latest
     environment:
       - TM_RPC_PORT=${TM_RPC_PORT:-45000}

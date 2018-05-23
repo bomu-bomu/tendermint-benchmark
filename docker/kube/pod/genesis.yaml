@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ndidplatform-genesis
+spec:
+  selector:
+    matchLabels:
+      app: genesis
+  serviceName: genesis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: genesis
+    spec:
+      containers:
+      - name: abci
+        image: ndidplatform/abci:latest
+        args: ["tcp://0.0.0.0:46000"]
+        ports:
+        - containerPort: 46000
+      - name: tm
+        image: ndidplatform/tendermint:latest
+        ports:
+        - containerPort: 45000
+        - containerPort: 47000
+        env:
+        - name: ABCI_PORT
+          value: "46000"
+        - name: TM_RPC_PORT
+          value: "45000"
+        - name: TM_P2P_PORT
+          value: "47000"
+        args: ["genesis", "--proxy_app=tcp://localhost:46000", "--rpc.laddr=tcp://0.0.0.0:45000" , "--p2p.laddr=tcp://0.0.0.0:47000" ]
+      - name: api
+        image: ndidplatform/api:latest
+        ports:
+        - containerPort: 5555
+        - containerPort: 8080
+        env:
+        - name: ROLE
+          value: "ndid"
+        - name: NODE_ID
+          value: "ndid1"
+        - name: NDID_IP
+          value: "localhost"
+        - name: TENDERMINT_IP
+          value: "localhost"
+        - name: TENDERMINT_PORT
+          value: "45000"
+        - name: MQ_CONTACT_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MQ_BINDING_PORT
+          value: "5555"
+        - name: SERVER_PORT
+          value: "8080"
