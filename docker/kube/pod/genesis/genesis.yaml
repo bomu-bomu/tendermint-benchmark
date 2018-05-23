@@ -21,7 +21,7 @@ spec:
         - tcp://0.0.0.0:46000
         ports:
         - containerPort: 46000
-      - name: tm
+      - name: tm-node-genesis
         image: watcharaphat/tendermint:latest
         ports:
         - containerPort: 45000
@@ -33,7 +33,7 @@ spec:
         - genesis
         - --p2p.laddr=tcp://0.0.0.0:47000
         - --rpc.laddr=tcp://0.0.0.0:45000
-        - --proxy_app=tcp://abci:46000
+        - --proxy_app=tcp://localhost:46000
       - name: api
         image: nutthadol/tm-benchmark-api:latest
         ports:
@@ -42,6 +42,6 @@ spec:
         - name: SERVER_PORT
           value: "8000"
         - name: TENDERMINT_IP
-          value: tm-node-genesis
+          value: localhost
         - name: TENDERMINT_PORT
           value: "45000"
