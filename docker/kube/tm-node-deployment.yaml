@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.13.0 (84fa826)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: tm-node
+  name: tm-node
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: tm-node
+    spec:
+      containers:
+      - args:
+        - secondary
+        - --p2p.laddr=tcp://0.0.0.0:47000
+        - --rpc.laddr=tcp://0.0.0.0:45000
+        - --proxy_app=tcp://abci:46000
+        - --p2p.seeds=tcp://tm-node-0:47000
+        env:
+        - name: SEED_HOSTNAME
+          value: tm-node-0
+        - name: TM_RPC_PORT
+          value: "45000"
+        image: watcharaphat/tendermint:latest
+        name: tm-node
+        ports:
+        - containerPort: 45000
+        - containerPort: 47000
+        resources: {}
+      restartPolicy: Always
+status: {}
