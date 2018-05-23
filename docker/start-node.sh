@@ -31,16 +31,14 @@ tendermint_wait_for_sync_complete() {
   local PORT=$2
   while true; do
     [ ! "$(wget -qO - http://${HOSTNAME}:${PORT}/status | jq -r .result.syncing)" = "false" ] || break
-    # [ ! "$(wget -qO - http://localhost:4500/status | jq -r .result.syncing)" = "false" ] || break
     sleep 1
   done;
 }
 
 tendermint_add_validator() {
-  # local PUBKEY=$(cat ${TMHOME}/config/priv_validator.json | jq -r .pub_key.data)
-  local PUBKEY=$(tendermint show_validator | jq -r .data | sed 's/ //g')
-  # wget -qO - http://${SEED_HOSTNAME}:${TM_RPC_PORT}/broadcast_tx_commit?tx=\"val:${PUBKEY}\"
-  curl -s "http://localhost:45000/broadcast_tx_commit?tx=\"val:${PUBKEY}\""
+  tendermint_wait_for_sync_complete localhost ${TM_RPC_PORT} 
+  local PUBKEY=$(cat ${TMHOME}/config/priv_validator.json | jq -r .pub_key.data)
+  wget -qO - http://${SEED_HOSTNAME}:${TM_RPC_PORT}/broadcast_tx_commit?tx=\"val:${PUBKEY}\"
 }
 
 TYPE=${1}
@@ -58,9 +56,8 @@ if [ ! -f ${TMHOME}/config/genesis.json ]; then
       tendermint_wait_for_sync_complete ${SEED_HOSTNAME} ${TM_RPC_PORT}
       tendermint_get_genesis_from_seed
       shift
+      tendermint_add_validator &
       tendermint node --consensus.create_empty_blocks=false --moniker=${HOSTNAME} $@
-      tendermint_wait_for_sync_complete localhost ${TM_RPC_PORT}
-      tendermint_add_validator
       ;;
     reset)
       tendermint_reset
