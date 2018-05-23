@@ -22,7 +22,7 @@ services:
   api:
     image: nutthadol/tm-benchmark-api:latest
     environment:
-     - TENDERMINT_IP=tm-node-0
+     - TENDERMINT_IP=tm-node-genesis
      - TENDERMINT_PORT=45000
      - SERVER_PORT=8000
     ports:
@@ -30,20 +30,20 @@ services:
     networks:
       - tendermint-benchmark
     depends_on:
-      - tm-node-0
+      - tm-node-genesis
 
   # # secondary nodes
   # tm-node:
   #   image: watcharaphat/tendermint:latest
   #   environment:
   #     - TM_RPC_PORT=${TM_RPC_PORT:-45000}
-  #     - SEED_HOSTNAME=tm-node-0
+  #     - SEED_HOSTNAME=tm-node-genesis
   #   command:
   #     - secondary
   #     - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
   #     - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
   #     - --proxy_app=tcp://abci:${ABCI_PORT:-46000}
-  #     - --p2p.seeds=tcp://tm-node-0:${TM_P2P_PORT:-47000}
+  #     - --p2p.seeds=tcp://tm-node-genesis:${TM_P2P_PORT:-47000}
   #   ports:
   #     - 45001:${TM_RPC_PORT:-45000}
   #     - 47001:${TM_P2P_PORT:-47000}

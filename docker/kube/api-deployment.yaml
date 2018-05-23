@@ -22,7 +22,7 @@ spec:
         - name: SERVER_PORT
           value: "8000"
         - name: TENDERMINT_IP
-          value: tm-node-0
+          value: tm-node-genesis
         - name: TENDERMINT_PORT
           value: "45000"
         image: nutthadol/tm-benchmark-api:latest

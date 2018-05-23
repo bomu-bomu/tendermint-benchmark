@@ -16,7 +16,6 @@ spec:
     port: 47000
     targetPort: 47000
   - name: api
-    protocol: TCP
-    port: 8080
-    targetPort: 8080
+    port: 8000
+    targetPort: 8000
 
