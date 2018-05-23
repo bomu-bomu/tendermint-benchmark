@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.13.0 (84fa826)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: tm-node-0
+  name: tm-node-0
+spec:
+  ports:
+  - name: "45000"
+    port: 45000
+    targetPort: 45000
+  - name: "47000"
+    port: 47000
+    targetPort: 47000
+  selector:
+    io.kompose.service: tm-node-0
+status:
+  loadBalancer: {}
