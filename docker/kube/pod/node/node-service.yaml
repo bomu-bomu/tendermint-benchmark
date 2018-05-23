@@ -1,0 +1,21 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: node-service
+spec:
+  selector:
+    app: node
+  ports:
+  - name: tm-rpc
+    protocol: TCP
+    port: 45000
+    targetPort: 45000
+  - name: tm-p2p
+    protocol: TCP
+    port: 47000
+    targetPort: 47000
+  - name: api
+    port: 8000
+    targetPort: 8000
+
