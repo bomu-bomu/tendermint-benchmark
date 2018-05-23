@@ -10,14 +10,14 @@ services:
       - genesis
       - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
       - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
-      - --proxy_app=tcp://abci-benchmark:${ABCI_PORT:-46000}
+      - --proxy_app=tcp://abci:${ABCI_PORT:-46000}
     ports:
       - 45000:${TM_RPC_PORT:-45000}
       - 47000:${TM_P2P_PORT:-47000}
     networks:
       - tendermint-benchmark
     depends_on:
-      - abci-benchmark
+      - abci
   
   api:
     image: nutthadol/tm-benchmark-api:latest
@@ -42,7 +42,7 @@ services:
       - secondary
       - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
       - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
-      - --proxy_app=tcp://abci-benchmark:${ABCI_PORT:-46000}
+      - --proxy_app=tcp://abci:${ABCI_PORT:-46000}
       - --p2p.seeds=tcp://tm-node-0:${TM_P2P_PORT:-47000}
     ports:
       - 45001:${TM_RPC_PORT:-45000}
@@ -52,7 +52,7 @@ services:
 
 
   # abci containers
-  abci-benchmark:
+  abci:
     image: watcharaphat/abci:latest
     command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
     networks:
