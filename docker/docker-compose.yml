@@ -20,9 +20,13 @@ services:
       - abci-benchmark
   
   api:
-    image: watcharaphat/api
+    image: nutthadol/tm-benchmark-api:latest
+    environment:
+     - TENDERMINT_IP=tm-genesis
+     - TENDERMINT_PORT=45000
+     - SERVER_PORT=8000
     ports:
-      - 8000:${REST_API_PORT:-8000}
+      - 8000:8000
     networks:
       - tendermint-benchmark
     depends_on:
@@ -39,12 +43,29 @@ services:
       - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
       - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
       - --proxy_app=tcp://abci-benchmark:${ABCI_PORT:-46000}
-      - --p2p.seeds=tm-genesis:${TM_P2P_PORT:-47000}
+      - --p2p.seeds=tcp://tm-genesis:${TM_P2P_PORT:-47000}
     ports:
       - 45001:${TM_RPC_PORT:-45000}
       - 47001:${TM_P2P_PORT:-47000}
     networks:
       - tendermint-benchmark
+
+  # tm-other-node:
+  #   image: watcharaphat/tendermint:latest
+  #   environment:
+  #     - TM_RPC_PORT=${TM_RPC_PORT:-45000}
+  #     - SEED_HOSTNAME=tm-genesis
+  #   command:
+  #     - secondary
+  #     - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
+  #     - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
+  #     - --proxy_app=tcp://abci-benchmark:${ABCI_PORT:-46000}
+  #     - --p2p.seeds=tcp://tm-genesis:${TM_P2P_PORT:-47000}
+  #   ports:
+  #     - 45002:${TM_RPC_PORT:-45000}
+  #     - 47002:${TM_P2P_PORT:-47000}
+  #   networks:
+  #     - tendermint-benchmark
 
   # tm-idp:
   #   image: ndidplatform/tendermint:latest

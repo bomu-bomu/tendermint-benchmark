@@ -31,13 +31,16 @@ tendermint_wait_for_sync_complete() {
   local PORT=$2
   while true; do
     [ ! "$(wget -qO - http://${HOSTNAME}:${PORT}/status | jq -r .result.syncing)" = "false" ] || break
+    # [ ! "$(wget -qO - http://localhost:4500/status | jq -r .result.syncing)" = "false" ] || break
     sleep 1
   done;
 }
 
 tendermint_add_validator() {
-  local PUBKEY=$(cat ${TMHOME}/config/priv_validator.json | jq -r .pub_key.data)
-  wget -qO - http://${SEED_HOSTNAME}:${TM_RPC_PORT}/broadcast_tx_commit?tx=\"val:${PUBKEY}\"
+  # local PUBKEY=$(cat ${TMHOME}/config/priv_validator.json | jq -r .pub_key.data)
+  local PUBKEY=$(tendermint show_validator | jq -r .data | sed 's/ //g')
+  # wget -qO - http://${SEED_HOSTNAME}:${TM_RPC_PORT}/broadcast_tx_commit?tx=\"val:${PUBKEY}\"
+  curl -s "http://localhost:45000/broadcast_tx_commit?tx=\"val:${PUBKEY}\""
 }
 
 TYPE=${1}

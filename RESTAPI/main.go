@@ -60,6 +60,5 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/send_all/{seq}", SendAll).Methods("POST")
 	router.HandleFunc("/send_idp/{seq}", SendIdp).Methods("POST")
-	fmt.Println("Server is listening at Port 8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
