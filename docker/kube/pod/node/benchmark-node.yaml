@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: node
-  serviceName: node-service
+  serviceName: benchmark-node-service
   replicas: 1
   template:
     metadata:
@@ -29,6 +29,8 @@ spec:
         env:
         - name: TM_RPC_PORT
           value: "45000"
+        - name: SEED_HOSTNAME
+          value: "genesis-service"
         args:
         - secondary
         - --rpc.laddr=tcp://0.0.0.0:45000
