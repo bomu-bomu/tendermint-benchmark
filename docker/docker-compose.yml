@@ -20,7 +20,7 @@ services:
       - abci
   
   api:
-    image: nutthadol/tm-benchmark-api:latest
+    image: watcharaphat/tm-benchmark-api:latest
     environment:
      - TENDERMINT_IP=tm-node
      - TENDERMINT_PORT=45000
@@ -49,6 +49,8 @@ services:
       - 47001:${TM_P2P_PORT:-47000}
     networks:
       - tendermint-benchmark
+    depends_on:
+      - tm-node-0
 
 
   # abci containers
