@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 
@@ -59,7 +60,34 @@ func SendIdp(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println(string(body))
 }
 
+// Get preferred outbound ip of this machine
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
+}
+
+// Add ip to ip list
+func IPRegister() {
+	ip := GetOutboundIP().String()
+	url := `http://` + os.Getenv("DISCOVERY_HOSTNAME") + `:` + os.Getenv("DISCOVERY_PORT") + `/ip/add/` + string(ip)
+	fmt.Println(`curl ` + url)
+
+	resp, err := http.Get(os.ExpandEnv(url))
+	if err != nil {
+		// handle err
+	}
+	defer resp.Body.Close()
+}
+
 func main() {
+	IPRegister()
 	router := mux.NewRouter()
 	router.HandleFunc("/send_all/{seq}", SendAll).Methods("POST")
 	router.HandleFunc("/send_idp/{seq}", SendIdp).Methods("POST")

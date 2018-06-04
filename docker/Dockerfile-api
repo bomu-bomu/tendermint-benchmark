@@ -6,8 +6,6 @@ COPY RESTAPI $GOPATH/src/github.com/watcharaphat/tendermint-benchmark/RESTAPI
 
 WORKDIR $GOPATH/src/github.com/watcharaphat/tendermint-benchmark/RESTAPI
 RUN dep ensure && go install
-# RUN go get github.com/gorilla/mux
-# RUN go build -o main .
 RUN go install github.com/watcharaphat/tendermint-benchmark/RESTAPI
 
 FROM alpine:3.7
