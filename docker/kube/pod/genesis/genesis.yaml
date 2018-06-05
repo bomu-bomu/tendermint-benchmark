@@ -35,7 +35,7 @@ spec:
         - --rpc.laddr=tcp://0.0.0.0:45000
         - --proxy_app=tcp://localhost:46000
       - name: api
-        image: nutthadol/tm-benchmark-api:latest
+        image: watcharaphat/tm-benchmark-api:latest
         ports:
         - containerPort: 8000
         env:
