@@ -133,13 +133,13 @@ func (app *DIDApplication) DeliverTx(tx []byte) (res types.ResponseDeliverTx) {
         
         seq := string([]byte(parts[0]))
         var mylog = []string{t.Format("060102150405.999"), seq, hex.EncodeToString(hashed1[:]), hex.EncodeToString(hashed2[:]), hex.EncodeToString(hashed3[:])}
-        file, err := os.OpenFile("files/result.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+        file, err := os.OpenFile("result.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
         
         if err != nil {
             log.Fatal("Cannot access file", err)
         }
         defer file.Close()
-        
+
         writer := csv.NewWriter(file)
         writer.Comma = '|'
         defer writer.Flush()
