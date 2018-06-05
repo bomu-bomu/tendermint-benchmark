@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+    "flag"
+    "net/http"
+    "log"
 
 	"github.com/fatih/color"
-	"github.com/oatsaysai/tendermint-benchmark/abci/did"
+	"github.com/tendermint-benchmark/abci/did"
 	server "github.com/tendermint/abci/server"
 	"github.com/tendermint/abci/types"
 	cmn "github.com/tendermint/tmlibs/common"
@@ -37,6 +40,17 @@ func runABCIServer(args []string) {
 	if err := srv.Start(); err != nil {
 		color.Red("%s", err)
 	}
+
+    // Create a web server on port 8100
+
+    port := flag.String("p", "8100", "port to serve on")
+    directory := flag.String("d", ".", "the directory of static file to host")
+    flag.Parse()
+
+    http.Handle("/", http.FileServer(http.Dir(*directory)))
+
+    log.Printf("Serving %s on HTTP port: %s\n", *directory, *port)
+    log.Fatal(http.ListenAndServe(":"+*port, nil))
 
 	// Wait forever
 	cmn.TrapSignal(func() {

@@ -125,7 +125,7 @@ func (app *DIDApplication) DeliverTx(tx []byte) (res types.ResponseDeliverTx) {
 		hashed2 := sha256.Sum256([]byte(parts[1] + "2"))
 		hashed3 := sha256.Sum256([]byte(parts[1] + "3"))
 
-		stored := parts[0] + "|" + parts[1] + "|" + hex.EncodeToString(hashed1[:]) + "|" + hex.EncodeToString(hashed2[:]) + "|" + hex.EncodeToString(hashed3[:])
+		stored := parts[0] + "," + parts[1] + "," + hex.EncodeToString(hashed1[:]) + "," + hex.EncodeToString(hashed2[:]) + "," + hex.EncodeToString(hashed3[:])
 		app.state.db.Set([]byte(parts[0]), []byte(stored))
 
 		t := time.Now()
@@ -140,7 +140,7 @@ func (app *DIDApplication) DeliverTx(tx []byte) (res types.ResponseDeliverTx) {
 		defer file.Close()
 
 		writer := csv.NewWriter(file)
-		writer.Comma = '|'
+		writer.Comma = ','
 		defer writer.Flush()
 		err = writer.Write(mylog)
 		if err != nil {
@@ -201,7 +201,7 @@ func (app *DIDApplication) Query(reqQuery types.RequestQuery) (res types.Respons
 		return ReturnQuery(nil, err.Error(), app.state.Height)
 	}
 	fmt.Println(string(txString))
-	parts := strings.Split(string(txString), "|")
+	parts := strings.Split(string(txString), ",")
 
 	method := parts[0]
 	param := parts[1]

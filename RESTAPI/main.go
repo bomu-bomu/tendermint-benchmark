@@ -24,8 +24,10 @@ func SendAll(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	seq := params["seq"]
-	url := `http://` + os.Getenv("TENDERMINT_IP") + `:` + os.Getenv("TENDERMINT_PORT") + `/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
-	// url := `http://localhost:46657/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
+
+	//url := `http://` + os.Getenv("TENDERMINT_IP") + `:` + os.Getenv("TENDERMINT_PORT") + `/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
+    url := `http://localhost:46657/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
+
 	req, _ := http.NewRequest("GET", url, nil)
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
@@ -49,8 +51,9 @@ func SendIdp(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	seq := params["seq"]
-	// url := `http://localhost:46657/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
-	url := `http://` + os.Getenv("TENDERMINT_IP") + `:` + os.Getenv("TENDERMINT_PORT") + `/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
+
+	url := `http://localhost:46657/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
+	// url := `http://` + os.Getenv("TENDERMINT_IP") + `:` + os.Getenv("TENDERMINT_PORT") + `/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
 
 	fmt.Println(string(url))
 	req, _ := http.NewRequest("GET", url, nil)
