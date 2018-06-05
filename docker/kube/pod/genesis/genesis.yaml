@@ -46,6 +46,6 @@ spec:
         - name: TENDERMINT_PORT
           value: "45000"
         - name: DISCOVERY_HOSTNAME
-          value: "node-discovery-server-service"
+          value: "node-discovery-server"
         - name: DISCOVERY_PORT
           value: "3000"
