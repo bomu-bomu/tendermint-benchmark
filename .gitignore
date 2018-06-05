@@ -7,3 +7,5 @@ vendor/
 Gopkg.lock
 
 result.csv
+
+tm-home
