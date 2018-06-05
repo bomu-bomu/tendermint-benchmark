@@ -38,7 +38,7 @@ spec:
         - --p2p.laddr=tcp://0.0.0.0:47000
         - --p2p.seeds=genesis-service:47000
       - name: api
-        image: nutthadol/tm-benchmark-api:latest
+        image: watcharaphat/tm-benchmark-api:latest
         ports:
         - containerPort: 8000
         env:
@@ -48,3 +48,8 @@ spec:
           value: localhost
         - name: TENDERMINT_PORT
           value: "45000"
+        - name: DISCOVERY_HOSTNAME
+          value: "node-discovery-server-service"
+        - name: DISCOVERY_PORT
+          value: "3000"
+
