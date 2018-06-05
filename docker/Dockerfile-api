@@ -1,0 +1,15 @@
+FROM golang:1.10 as builder
+
+ENV CGO_ENABLED=0
+RUN go get github.com/golang/dep/cmd/dep
+COPY RESTAPI $GOPATH/src/github.com/watcharaphat/tendermint-benchmark/RESTAPI
+
+WORKDIR $GOPATH/src/github.com/watcharaphat/tendermint-benchmark/RESTAPI
+RUN dep ensure && go install
+RUN go install github.com/watcharaphat/tendermint-benchmark/RESTAPI
+
+FROM alpine:3.7
+
+ENV TERM=xterm-256color
+COPY --from=builder /go/bin/RESTAPI /usr/bin/RESTAPI
+ENTRYPOINT [ "RESTAPI" ]

@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: benchmark-node
+spec:
+  selector:
+    matchLabels:
+      app: node
+  serviceName: benchmark-node-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: abci
+        image: watcharaphat/abci:latest
+        args:
+        - tcp://0.0.0.0:46000
+        ports:
+        - containerPort: 46000
+      - name: tm
+        image: watcharaphat/tendermint:latest
+        ports:
+        - containerPort: 45000
+        - containerPort: 47000
+        env:
+        - name: TM_RPC_PORT
+          value: "45000"
+        - name: SEED_HOSTNAME
+          value: "genesis-service"
+        args:
+        - secondary
+        - --rpc.laddr=tcp://0.0.0.0:45000
+        - --proxy_app=tcp://localhost:46000
+        - --p2p.laddr=tcp://0.0.0.0:47000
+        - --p2p.seeds=genesis-service:47000
+      - name: api
+        image: watcharaphat/tm-benchmark-api:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: SERVER_PORT
+          value: "8000"
+        - name: TENDERMINT_IP
+          value: localhost
+        - name: TENDERMINT_PORT
+          value: "45000"
+        - name: DISCOVERY_HOSTNAME
+          value: "node-discovery-server"
+        - name: DISCOVERY_PORT
+          value: "3000"
+

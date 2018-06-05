@@ -6,8 +6,9 @@ import (
     "flag"
     "net/http"
     "log"
+
 	"github.com/fatih/color"
-	"github.com/oatsaysai/tendermint-benchmark/abci/did"
+	"github.com/tendermint-benchmark/abci/did"
 	server "github.com/tendermint/abci/server"
 	"github.com/tendermint/abci/types"
 	cmn "github.com/tendermint/tmlibs/common"
@@ -15,10 +16,7 @@ import (
 )
 
 func main() {
-runABCIServer(os.Args)
-
-
-
+	runABCIServer(os.Args)
 }
 
 func runABCIServer(args []string) {
@@ -42,6 +40,7 @@ func runABCIServer(args []string) {
 	if err := srv.Start(); err != nil {
 		color.Red("%s", err)
 	}
+
     // Create a web server on port 8100
 
     port := flag.String("p", "8100", "port to serve on")

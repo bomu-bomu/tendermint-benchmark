@@ -1,0 +1,93 @@
+version: '3'
+services:
+
+  # genesis node
+  tm-node-genesis:
+    image: watcharaphat/tendermint:latest
+    environment:
+      - TM_RPC_PORT=${TM_RPC_PORT:-45000}
+    command: 
+      - genesis
+      - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
+      - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
+      - --proxy_app=tcp://abci-genesis:${ABCI_PORT:-46000}
+    ports:
+      - 45000:${TM_RPC_PORT:-45000}
+      - 47000:${TM_P2P_PORT:-47000}
+    networks:
+      - tendermint-benchmark
+    depends_on:
+      - abci-genesis
+  
+  api-genesis:
+    image: watcharaphat/tm-benchmark-api:latest
+    environment:
+     - TENDERMINT_IP=tm-node-genesis
+     - TENDERMINT_PORT=45000
+     - SERVER_PORT=8000
+     - DISCOVERY_HOSTNAME=node-discovery-server
+     - DISCOVERY_PORT=3000
+    ports:
+      - 8000:8000
+    networks:
+      - tendermint-benchmark
+    depends_on:
+      - tm-node-genesis
+
+  api:
+    image: watcharaphat/tm-benchmark-api:latest
+    environment:
+     - TENDERMINT_IP=tm-node
+     - TENDERMINT_PORT=45000
+     - SERVER_PORT=8000
+     - DISCOVERY_HOSTNAME=node-discovery-server
+     - DISCOVERY_PORT=3000
+    ports:
+      - 7999:8000
+    networks:
+      - tendermint-benchmark
+    depends_on:
+      - tm-node
+
+  # secondary nodes
+  tm-node:
+    image: watcharaphat/tendermint:latest
+    environment:
+      - TM_RPC_PORT=${TM_RPC_PORT:-45000}
+      - SEED_HOSTNAME=tm-node-genesis
+    command:
+      - secondary
+      - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
+      - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
+      - --proxy_app=tcp://abci:${ABCI_PORT:-46000}
+      - --p2p.seeds=tcp://tm-node-genesis:${TM_P2P_PORT:-47000}
+    ports:
+      - 45001:${TM_RPC_PORT:-45000}
+      - 47001:${TM_P2P_PORT:-47000}
+    networks:
+      - tendermint-benchmark
+    depends_on:
+      - tm-node-genesis
+
+  # abci containers
+  abci-genesis:
+    image: watcharaphat/abci:latest
+    command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
+    networks:
+      - tendermint-benchmark
+
+  abci:
+    image: watcharaphat/abci:latest
+    command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
+    networks:
+      - tendermint-benchmark
+
+  node-discovery-server:
+    image: watcharaphat/node-discovery-server
+    ports:
+      - 3000:3000
+    networks:
+      - tendermint-benchmark
+
+networks:
+  tendermint-benchmark:
