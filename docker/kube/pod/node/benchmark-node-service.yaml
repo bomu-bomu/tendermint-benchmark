@@ -5,7 +5,7 @@ metadata:
   name: benchmark-node-service
 spec:
   selector:
-    app: node
+    app: benchmark-node
   ports:
   - name: tm-rpc
     protocol: TCP
