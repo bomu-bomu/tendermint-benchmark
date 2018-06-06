@@ -73,12 +73,16 @@ services:
   abci-genesis:
     image: watcharaphat/abci:latest
     command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
+    ports:
+      - 8100:8100
     networks:
       - tendermint-benchmark
 
   abci:
     image: watcharaphat/abci:latest
     command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
+    ports:
+      - 8101:8100
     networks:
       - tendermint-benchmark
 
