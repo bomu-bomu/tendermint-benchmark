@@ -21,6 +21,7 @@ spec:
         - tcp://0.0.0.0:46000
         ports:
         - containerPort: 46000
+        - containerPort: 8100
       - name: tm-node-genesis
         image: watcharaphat/tendermint:latest
         ports:
