@@ -125,9 +125,13 @@ func (app *DIDApplication) DeliverTx(tx []byte) (res types.ResponseDeliverTx) {
 		// hashed2 := sha256.Sum256([]byte(parts[1] + "2"))
 		// hashed3 := sha256.Sum256([]byte(parts[1] + "3"))
 
-		hashed1 := []byte(parts[1] + "1")
-		hashed2 := []byte(parts[1] + "2")
-		hashed3 := []byte(parts[1] + "3")
+		// hashed1 := []byte(parts[1] + "1")
+		// hashed2 := []byte(parts[1] + "2")
+		// hashed3 := []byte(parts[1] + "3")
+
+		hashed1 := []byte("1")
+		hashed2 := []byte("2")
+		hashed3 := []byte("3")
 
 		stored := parts[0] + "," + parts[1] + "," + hex.EncodeToString(hashed1[:]) + "," + hex.EncodeToString(hashed2[:]) + "," + hex.EncodeToString(hashed3[:])
 		app.state.db.Set([]byte(parts[0]), []byte(stored))
