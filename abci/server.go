@@ -8,7 +8,7 @@ import (
     "log"
 
 	"github.com/fatih/color"
-	"github.com/tendermint-benchmark/abci/did"
+	"github.com/watcharaphat/tendermint-benchmark/abci/did"
 	server "github.com/tendermint/abci/server"
 	"github.com/tendermint/abci/types"
 	cmn "github.com/tendermint/tmlibs/common"
