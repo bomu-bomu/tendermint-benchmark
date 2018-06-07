@@ -33,6 +33,7 @@ services:
       - tendermint-benchmark
     depends_on:
       - tm-node-genesis
+      - node-discovery-server
 
   api:
     image: watcharaphat/tm-benchmark-api:latest
