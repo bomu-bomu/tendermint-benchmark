@@ -60,7 +60,7 @@ services:
       - --p2p.laddr=tcp://0.0.0.0:${TM_P2P_PORT:-47000}
       - --rpc.laddr=tcp://0.0.0.0:${TM_RPC_PORT:-45000}
       - --proxy_app=tcp://abci:${ABCI_PORT:-46000}
-      - --p2p.seeds=tcp://tm-node-genesis:${TM_P2P_PORT:-47000}
+      # - --p2p.seeds=tcp://tm-node-genesis:${TM_P2P_PORT:-47000}
     ports:
       - 45001:${TM_RPC_PORT:-45000}
       - 47001:${TM_P2P_PORT:-47000}
