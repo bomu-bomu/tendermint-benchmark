@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -136,10 +137,12 @@ func (app *DIDApplication) DeliverTx(tx []byte) (res types.ResponseDeliverTx) {
 		stored := parts[0] + "," + parts[1] + "," + hex.EncodeToString(hashed1[:]) + "," + hex.EncodeToString(hashed2[:]) + "," + hex.EncodeToString(hashed3[:])
 		app.state.db.Set([]byte(parts[0]), []byte(stored))
 
-		t := time.Now()
+		// t := time.Now()
+		ts := strconv.FormatInt(time.Now().UnixNano()/int64(time.Millisecond), 10)
 
 		seq := string([]byte(parts[0]))
-		var mylog = []string{t.Format("060102150405.999"), seq, hex.EncodeToString(hashed1[:]), hex.EncodeToString(hashed2[:]), hex.EncodeToString(hashed3[:])}
+		// var mylog = []string{t.Format("060102150405.999"), seq, hex.EncodeToString(hashed1[:]), hex.EncodeToString(hashed2[:]), hex.EncodeToString(hashed3[:])}
+		var mylog = []string{seq, ts}
 		file, err := os.OpenFile("result.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 		if err != nil {

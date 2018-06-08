@@ -26,7 +26,7 @@ func SendAll(w http.ResponseWriter, r *http.Request) {
 	seq := params["seq"]
 
 	url := `http://` + os.Getenv("TENDERMINT_IP") + `:` + os.Getenv("TENDERMINT_PORT") + `/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
-    // url := `http://localhost:46657/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
+	// url := `http://localhost:46657/broadcast_tx_async?tx="` + seq + `=` + p.Payload + `"`
 
 	req, _ := http.NewRequest("GET", url, nil)
 	res, _ := http.DefaultClient.Do(req)
@@ -79,14 +79,22 @@ func GetOutboundIP() net.IP {
 // Add ip to ip list
 func IPRegister() {
 	ip := GetOutboundIP().String()
-	url := `http://` + os.Getenv("DISCOVERY_HOSTNAME") + `:` + os.Getenv("DISCOVERY_PORT") + `/ip/add/` + string(ip)
+	url := `http://` + os.Getenv("DISCOVERY_HOSTNAME") + `:` + os.Getenv("DISCOVERY_PORT") + `/api-ip/add/` + string(ip)
 	fmt.Println(`curl ` + url)
 
+	resp := getRequest(url)
+
+	defer resp.Body.Close()
+}
+
+func getRequest(url string) *http.Response {
 	resp, err := http.Get(os.ExpandEnv(url))
 	if err != nil {
-		// handle err
+		fmt.Println("Trying to do IP registration again.")
+		getRequest(url)
 	}
-	defer resp.Body.Close()
+
+	return resp
 }
 
 func main() {
