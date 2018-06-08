@@ -22,6 +22,11 @@ spec:
         ports:
         - containerPort: 46000
         - containerPort: 8100
+        env:
+        - name: DISCOVERY_HOSTNAME
+          value: "node-discovery-server"
+        - name: DISCOVERY_PORT
+          value: "3000"
       - name: tm-node-genesis
         image: watcharaphat/tendermint:latest
         ports:
