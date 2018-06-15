@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/fatih/color"
 	server "github.com/tendermint/abci/server"
@@ -36,6 +37,7 @@ func getRequest(url string) *http.Response {
 	resp, err := http.Get(os.ExpandEnv(url))
 	if err != nil {
 		fmt.Println("Trying to do IP registration again.")
+		time.Sleep(5 * time.Second)
 		getRequest(url)
 	}
 
