@@ -14,6 +14,8 @@ tendermint_init() {
   tendermint init --home=${TMHOME}
   cp /tendermint/config/config.toml  /tendermint/config/config.toml.orig
   sed 's/max_num_peers = \d\+/max_num_peers = 200/g' /tendermint/config/config.toml.orig > /tendermint/config/config.toml
+  cp /tendermint/config/config.toml  /tendermint/config/config.toml.orig
+  sed 's/max_block_size_txs = \d\+/max_block_size_txs = 7500/g' /tendermint/config/config.toml.orig > /tendermint/config/config.toml
 }
 
 tendermint_reset() {

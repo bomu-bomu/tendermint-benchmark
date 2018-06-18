@@ -4,6 +4,9 @@ services:
   # genesis node
   tm-node-genesis:
     image: watcharaphat/tendermint:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-tendermint
     environment:
       - TM_RPC_PORT=${TM_RPC_PORT:-45000}
     command: 
@@ -21,6 +24,9 @@ services:
   
   api-genesis:
     image: watcharaphat/tm-benchmark-api:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-api
     environment:
      - TENDERMINT_IP=tm-node-genesis
      - TENDERMINT_PORT=45000
@@ -73,6 +79,9 @@ services:
   # abci containers
   abci-genesis:
     image: watcharaphat/abci:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-abci
     command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
     environment:
      - DISCOVERY_HOSTNAME=node-discovery-server
