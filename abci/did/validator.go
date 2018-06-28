@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ndidplatform/smart-contract/abci/code"
 	"github.com/tendermint/abci/types"
 	crypto "github.com/tendermint/go-crypto"
+	"github.com/watcharaphat/tendermint-benchmark/abci/code"
 )
 
 const (

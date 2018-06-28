@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ndidplatform/smart-contract/abci/code"
 	"github.com/tendermint/abci/types"
 	dbm "github.com/tendermint/tmlibs/db"
+	"github.com/watcharaphat/tendermint-benchmark/abci/code"
 )
 
 var (
