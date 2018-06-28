@@ -4,6 +4,9 @@ services:
   # genesis node
   tm-node-genesis:
     image: watcharaphat/tendermint:latest
+    build:
+      context: .
+      dockerfile: Dockerfile-tendermint
     environment:
       - TM_RPC_PORT=${TM_RPC_PORT:-45000}
     command: 
@@ -21,6 +24,9 @@ services:
   
   api-genesis:
     image: watcharaphat/tm-benchmark-api:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-api
     environment:
      - TENDERMINT_IP=tm-node-genesis
      - TENDERMINT_PORT=45000
@@ -33,6 +39,7 @@ services:
       - tendermint-benchmark
     depends_on:
       - tm-node-genesis
+      - node-discovery-server
 
   api:
     image: watcharaphat/tm-benchmark-api:latest
@@ -72,24 +79,45 @@ services:
   # abci containers
   abci-genesis:
     image: watcharaphat/abci:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-abci
     command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
+    environment:
+     - DISCOVERY_HOSTNAME=node-discovery-server
+     - DISCOVERY_PORT=3000
     ports:
       - 8100:8100
     networks:
       - tendermint-benchmark
+    depends_on:
+      - node-discovery-server
 
   abci:
     image: watcharaphat/abci:latest
     command: ["tcp://0.0.0.0:${ABCI_PORT:-46000}"]
+    environment:
+     - DISCOVERY_HOSTNAME=node-discovery-server
+     - DISCOVERY_PORT=3000
     ports:
       - 8101:8100
     networks:
       - tendermint-benchmark
+    depends_on:
+      - node-discovery-server
 
   node-discovery-server:
     image: watcharaphat/node-discovery-server
     ports:
       - 3000:3000
+    networks:
+      - tendermint-benchmark
+
+  ubuntu-dev:
+    image: watcharaphat/ubuntu
+    environment:
+     - DISCOVERY_HOSTNAME=node-discovery-server
+     - DISCOVERY_PORT=3000
     networks:
       - tendermint-benchmark
 

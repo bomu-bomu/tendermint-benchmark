@@ -1,7 +1,12 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install -y git make vim gcc g++ cmake curl jq
+RUN apt-get update && apt-get install -y git make vim gcc g++ cmake curl jq wget
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash
 RUN apt-get update && apt-get install -y nodejs
+RUN npm install -g n
+RUN n stable
+
+RUN git clone https://github.com/watcharaphat/loadtest
+RUN cd loadtest && npm install
 
 CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"

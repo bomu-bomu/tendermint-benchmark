@@ -1,22 +1,60 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
 	"os"
-    "flag"
-    "net/http"
-    "log"
+	"time"
 
 	"github.com/fatih/color"
-	"github.com/watcharaphat/tendermint-benchmark/abci/did"
 	server "github.com/tendermint/abci/server"
 	"github.com/tendermint/abci/types"
 	cmn "github.com/tendermint/tmlibs/common"
 	tdmLog "github.com/tendermint/tmlibs/log"
+	"github.com/watcharaphat/tendermint-benchmark/abci/did"
 )
 
 func main() {
+	IPRegister()
 	runABCIServer(os.Args)
+}
+
+// Add ip to ip list
+func IPRegister() {
+	ip := GetOutboundIP().String()
+	url := `http://` + os.Getenv("DISCOVERY_HOSTNAME") + `:` + os.Getenv("DISCOVERY_PORT") + `/abci-ip/add/` + string(ip)
+	fmt.Println(`curl ` + url)
+
+	resp := getRequest(url)
+
+	defer resp.Body.Close()
+}
+
+func getRequest(url string) *http.Response {
+	resp, err := http.Get(os.ExpandEnv(url))
+	if err != nil {
+		fmt.Println("Trying to do IP registration again.")
+		time.Sleep(5 * time.Second)
+		getRequest(url)
+	}
+
+	return resp
+}
+
+// Get preferred outbound ip of this machine
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
 }
 
 func runABCIServer(args []string) {
@@ -41,16 +79,16 @@ func runABCIServer(args []string) {
 		color.Red("%s", err)
 	}
 
-    // Create a web server on port 8100
+	// Create a web server on port 8100
 
-    port := flag.String("p", "8100", "port to serve on")
-    directory := flag.String("d", ".", "the directory of static file to host")
-    flag.Parse()
+	port := flag.String("p", "8100", "port to serve on")
+	directory := flag.String("d", ".", "the directory of static file to host")
+	flag.Parse()
 
-    http.Handle("/", http.FileServer(http.Dir(*directory)))
+	http.Handle("/", http.FileServer(http.Dir(*directory)))
 
-    log.Printf("Serving %s on HTTP port: %s\n", *directory, *port)
-    log.Fatal(http.ListenAndServe(":"+*port, nil))
+	log.Printf("Serving %s on HTTP port: %s\n", *directory, *port)
+	log.Fatal(http.ListenAndServe(":"+*port, nil))
 
 	// Wait forever
 	cmn.TrapSignal(func() {
