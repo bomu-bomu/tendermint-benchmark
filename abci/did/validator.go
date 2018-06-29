@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -41,7 +42,8 @@ func (app *DIDApplication) execValidatorTx(tx []byte) types.ResponseDeliverTx {
 	tx = tx[len(ValidatorSetChangePrefix):]
 
 	// TODO change get PubKey and Power when got ValidatorTx
-	pubKeyAndPower := strings.Split(string(tx), "/")
+	// Use "@" as separator since pubKey is base64 and may contain "/"
+	pubKeyAndPower := strings.Split(string(tx), "@")
 	if len(pubKeyAndPower) < 1 {
 		return types.ResponseDeliverTx{
 			Code: code.CodeTypeEncodingError,
@@ -53,25 +55,21 @@ func (app *DIDApplication) execValidatorTx(tx []byte) types.ResponseDeliverTx {
 		powerS = "0"
 	}
 
-	//get the pubkey and power
-	// pubKeyAndPower := strings.Split(string(tx), "/")
-	// if len(pubKeyAndPower) != 2 {
-	// 	return types.ResponseDeliverTx{
-	// 		Code: code.CodeTypeEncodingError,
-	// 		Log:  fmt.Sprintf("Expected 'pubkey/power'. Got %v", pubKeyAndPower)}
-	// }
-	// pubkeyS, powerS := pubKeyAndPower[0], pubKeyAndPower[1]
+	publicKey, err := url.PathUnescape(pubkeyS)
+	if err != nil {
+		return types.ResponseDeliverTx{
+			Code: code.CodeTypeEncodingError,
+			Log:  fmt.Sprintf("Pubkey (%s) cannot unescape", pubkeyS)}
+	}
 
-	// decode the pubkey, ensuring its go-crypto encoded
-	// pubkey, err := hex.DecodeString(pubkeyS)
-	pubkey, err := base64.StdEncoding.DecodeString(string(pubkeyS))
+	pubkey, err := base64.StdEncoding.DecodeString(publicKey)
 	var pubKeyEd crypto.PubKeyEd25519
 	copy(pubKeyEd[:], pubkey)
 
 	if err != nil {
 		return types.ResponseDeliverTx{
 			Code: code.CodeTypeEncodingError,
-			Log:  fmt.Sprintf("Pubkey (%s) is invalid hex", pubkeyS)}
+			Log:  fmt.Sprintf("Pubkey (%s) is invalid hex", publicKey)}
 	}
 	/*_, err = crypto.PubKeyFromBytes(pubkey)
 	if err != nil {
