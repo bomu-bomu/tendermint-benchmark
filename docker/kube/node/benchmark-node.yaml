@@ -42,7 +42,6 @@ spec:
         - --rpc.laddr=tcp://0.0.0.0:45000
         - --proxy_app=tcp://localhost:46000
         - --p2p.laddr=tcp://0.0.0.0:47000
-        - --p2p.seeds=genesis-service:47000
       - name: api
         image: watcharaphat/tm-benchmark-api:latest
         ports:
