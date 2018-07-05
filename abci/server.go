@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	server "github.com/tendermint/abci/server"
-	"github.com/tendermint/abci/types"
-	cmn "github.com/tendermint/tmlibs/common"
-	tdmLog "github.com/tendermint/tmlibs/log"
+	server "github.com/tendermint/tendermint/abci/server"
+	"github.com/tendermint/tendermint/abci/types"
+	cmn "github.com/tendermint/tendermint/libs/common"
+	tdmLog "github.com/tendermint/tendermint/libs/log"
 	"github.com/watcharaphat/tendermint-benchmark/abci/did"
 )
 

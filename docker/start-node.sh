@@ -44,7 +44,7 @@ tendermint_wait_for_sync_complete() {
   local HOSTNAME=$1
   local PORT=$2
   while true; do
-    [ ! "$(wget -qO - http://${HOSTNAME}:${PORT}/status | jq -r .result.sync_info.syncing)" = "false" ] || break
+    [ ! "$(wget -qO - http://${HOSTNAME}:${PORT}/status | jq -r .result.sync_info.catching_up)" = "false" ] || break
     sleep 1
   done;
 }

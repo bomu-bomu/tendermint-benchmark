@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tendermint/abci/types"
-	dbm "github.com/tendermint/tmlibs/db"
+	"github.com/tendermint/tendermint/abci/types"
+	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/watcharaphat/tendermint-benchmark/abci/code"
 )
 

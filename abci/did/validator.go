@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tendermint/abci/types"
-	crypto "github.com/tendermint/go-crypto"
+	"github.com/tendermint/tendermint/abci/types"
+	crypto "github.com/tendermint/tendermint/crypto"
 	"github.com/watcharaphat/tendermint-benchmark/abci/code"
 )
 
@@ -86,13 +86,19 @@ func (app *DIDApplication) execValidatorTx(tx []byte) types.ResponseDeliverTx {
 			Log:  fmt.Sprintf("Power (%s) is not an int", powerS)}
 	}
 
+	var pubKeyObj types.PubKey
+	pubKeyObj.Type = "ed25519"
+	pubKeyObj.Data = pubkey
+
 	// update
-	return app.updateValidator(types.Validator{pubKeyEd.Bytes(), power})
+	return app.updateValidator(types.Validator{pubKeyEd.Address(), pubKeyObj, power})
+	// return app.updateValidator(types.Validator{pubKeyEd.Bytes(), power})
 }
 
 // add, update, or remove a validator
 func (app *DIDApplication) updateValidator(v types.Validator) types.ResponseDeliverTx {
-	key := []byte("val:" + string(v.PubKey))
+	// key := []byte("val:" + string(v.PubKey))
+	key := []byte("val:" + base64.StdEncoding.EncodeToString(v.PubKey.GetData()))
 	if v.Power == 0 {
 		// remove validator
 		if !app.state.db.Has(key) {

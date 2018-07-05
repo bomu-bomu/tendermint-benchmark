@@ -8,6 +8,12 @@
   revision = "1432d294a5b055c297457c25434efbf13384cc46"
 
 [[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
@@ -91,18 +97,6 @@
   version = "v0.0.3"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/ndidplatform/smart-contract"
-  packages = ["abci/code"]
-  revision = "d476054b5d83e64a30860ccc858a121ad8df11e0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/oatsaysai/tendermint-benchmark"
-  packages = ["abci/did"]
-  revision = "5629126c88f053674881c66b99c3ab51a0700711"
-
-[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -128,15 +122,6 @@
   revision = "e6d6b529196422703d54ff5c40e79809ec2020b3"
 
 [[projects]]
-  name = "github.com/tendermint/abci"
-  packages = [
-    "server",
-    "types"
-  ]
-  revision = "78a8905690ef54f9d57e3b2b0ee7ad3a04ef3f1f"
-  version = "v0.10.3"
-
-[[projects]]
   branch = "master"
   name = "github.com/tendermint/ed25519"
   packages = [
@@ -147,29 +132,24 @@
   revision = "d8387025d2b9d158cf4efb07e7ebf814bcce2057"
 
 [[projects]]
-  name = "github.com/tendermint/go-crypto"
+  name = "github.com/tendermint/go-amino"
   packages = ["."]
-  revision = "c3e19f3ea26f5c3357e0bcbb799b0761ef923755"
-  version = "v0.5.0"
+  revision = "2106ca61d91029c931fd54968c2bb02dc96b1412"
+  version = "0.10.1"
 
 [[projects]]
-  name = "github.com/tendermint/go-wire"
+  name = "github.com/tendermint/tendermint"
   packages = [
-    ".",
-    "data"
+    "abci/server",
+    "abci/types",
+    "crypto",
+    "crypto/tmhash",
+    "libs/common",
+    "libs/db",
+    "libs/log"
   ]
-  revision = "fa721242b042ecd4c6ed1a934ee740db4f74e45c"
-  version = "v0.7.3"
-
-[[projects]]
-  name = "github.com/tendermint/tmlibs"
-  packages = [
-    "common",
-    "db",
-    "log"
-  ]
-  revision = "d94e312673e16a11ea55d742cefb3e331228f898"
-  version = "v0.8.2"
+  revision = "dfa9a9a30a666132425b29454e90a472aa579a48"
+  version = "v0.22.0"
 
 [[projects]]
   branch = "master"
@@ -236,9 +216,13 @@
   packages = [
     ".",
     "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
     "codes",
     "connectivity",
     "credentials",
+    "encoding",
+    "encoding/proto",
     "grpclb/grpc_lb_v1/messages",
     "grpclog",
     "internal",
@@ -247,17 +231,19 @@
     "naming",
     "peer",
     "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
     "stats",
     "status",
     "tap",
     "transport"
   ]
-  revision = "5b3c4e850e90a4cf6a20ebd46c8b32a0a3afcb9e"
-  version = "v1.7.5"
+  revision = "d11072e7ca9811b1100b80ca0269ac831f06d024"
+  version = "v1.11.3"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9dd453f87ee6a635c037fb4e909a2f5f318e0f8c3ab108a88846be0e97f5b141"
+  inputs-digest = "c7ec28e5f6cd4dd49ae0d4c351d1eae4d46109d2d2465151b8b0354604f70ce4"
   solver-name = "gps-cdcl"
   solver-version = 1
