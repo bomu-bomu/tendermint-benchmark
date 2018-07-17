@@ -1,7 +1,6 @@
 package did
 
 import (
-	"crypto/sha256"
 	"encoding/base64"
 	"encoding/csv"
 	"encoding/hex"
@@ -9,10 +8,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
+	"github.com/tendermint/iavl"
 	"github.com/tendermint/tendermint/abci/types"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/watcharaphat/tendermint-benchmark/abci/code"
@@ -24,25 +26,29 @@ var (
 )
 
 type State struct {
-	db      dbm.DB
-	Size    int64  `json:"size"`
-	Height  int64  `json:"height"`
-	AppHash []byte `json:"app_hash"`
+	db *iavl.VersionedTree
 }
 
+// type State struct {
+// 	db      dbm.DB
+// 	Size    int64  `json:"size"`
+// 	Height  int64  `json:"height"`
+// 	AppHash []byte `json:"app_hash"`
+// }
+
 // TO DO save state as DB file
-func loadState(db dbm.DB) State {
-	stateBytes := db.Get(stateKey)
-	var state State
-	if len(stateBytes) != 0 {
-		err := json.Unmarshal(stateBytes, &state)
-		if err != nil {
-			panic(err)
-		}
-	}
-	state.db = db
-	return state
-}
+// func loadState(db dbm.DB) State {
+// 	stateBytes := db.Get(stateKey)
+// 	var state State
+// 	if len(stateBytes) != 0 {
+// 		err := json.Unmarshal(stateBytes, &state)
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 	}
+// 	state.db = db
+// 	return state
+// }
 
 func saveState(state State) {
 	stateBytes, err := json.Marshal(state)
@@ -62,15 +68,40 @@ type DIDApplication struct {
 	types.BaseApplication
 	state      State
 	ValUpdates []types.Validator
+	logger     *logrus.Entry
+	Version    string
 }
 
 func NewDIDApplication() *DIDApplication {
-	state := loadState(dbm.NewMemDB())
-	return &DIDApplication{state: state}
+	logger := logrus.WithFields(logrus.Fields{"module": "abci-app"})
+	defer func() {
+		if r := recover(); r != nil {
+			logger.Errorf("%s", identifyPanic())
+			panic(r)
+		}
+	}()
+	logger.Infoln("NewDIDApplication")
+	var dbDir = getEnv("DB_NAME", "DID")
+	name := "didDB"
+	db := dbm.NewDB(name, "leveldb", dbDir)
+	tree := iavl.NewVersionedTree(db, 0)
+	tree.Load()
+	var state State
+	state.db = tree
+	return &DIDApplication{state: state,
+		logger:  logger,
+		Version: "0.5.0", // Hard code set version
+	}
 }
 
 func (app *DIDApplication) Info(req types.RequestInfo) (resInfo types.ResponseInfo) {
-	return types.ResponseInfo{Data: fmt.Sprintf("{\"size\":%v}", app.state.Size)}
+	var res types.ResponseInfo
+	res.Version = app.Version
+	res.LastBlockHeight = app.state.db.Version64()
+	res.LastBlockAppHash = app.state.db.Hash()
+
+	return res
+	// return types.ResponseInfo{Data: fmt.Sprintf("{\"size\":%v}", app.state.Size)}
 }
 
 // Save the validators in the merkle tree
@@ -172,26 +203,30 @@ func (app *DIDApplication) CheckTx(tx []byte) (res types.ResponseCheckTx) {
 }
 
 func (app *DIDApplication) Commit() types.ResponseCommit {
-	fmt.Println("Commit")
-	itr := app.state.db.Iterator(nil, nil)
-	defer itr.Close()
+	// fmt.Println("Commit")
+	// itr := app.state.db.Iterator(nil, nil)
+	// defer itr.Close()
 
-	strAppHash := ""
-	for ; itr.Valid(); itr.Next() {
-		k := itr.Key()
-		v := itr.Value()
-		if string(k) != "stateKey" {
-			strAppHash += string(k) + string(v)
-		}
-		// fmt.Println(string(k) + "->" + string(v))
-	}
-	h := sha256.New()
-	h.Write([]byte(strAppHash))
-	appHash := h.Sum(nil)
-	app.state.AppHash = appHash
-	app.state.Height += 1
-	saveState(app.state)
-	return types.ResponseCommit{Data: appHash}
+	// strAppHash := ""
+	// for ; itr.Valid(); itr.Next() {
+	// 	k := itr.Key()
+	// 	v := itr.Value()
+	// 	if string(k) != "stateKey" {
+	// 		strAppHash += string(k) + string(v)
+	// 	}
+	// 	// fmt.Println(string(k) + "->" + string(v))
+	// }
+	// h := sha256.New()
+	// h.Write([]byte(strAppHash))
+	// appHash := h.Sum(nil)
+	// app.state.AppHash = appHash
+	// app.state.Height += 1
+	// saveState(app.state)
+	// return types.ResponseCommit{Data: appHash}
+
+	app.logger.Infof("Commit")
+	app.state.db.SaveVersion()
+	return types.ResponseCommit{Data: app.state.db.Hash()}
 }
 
 func (app *DIDApplication) Query(reqQuery types.RequestQuery) (res types.ResponseQuery) {
@@ -201,7 +236,7 @@ func (app *DIDApplication) Query(reqQuery types.RequestQuery) (res types.Respons
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in f", r)
-			res = ReturnQuery(nil, "wrong query format", app.state.Height)
+			res = ReturnQuery(nil, "wrong query format", app.state.db.Version64())
 		}
 	}()
 
@@ -209,7 +244,7 @@ func (app *DIDApplication) Query(reqQuery types.RequestQuery) (res types.Respons
 
 	txString, err := base64.StdEncoding.DecodeString(string(reqQuery.Data))
 	if err != nil {
-		return ReturnQuery(nil, err.Error(), app.state.Height)
+		return ReturnQuery(nil, err.Error(), app.state.db.Version64())
 	}
 	fmt.Println(string(txString))
 	parts := strings.Split(string(txString), ",")
@@ -218,10 +253,10 @@ func (app *DIDApplication) Query(reqQuery types.RequestQuery) (res types.Respons
 	param := parts[1]
 
 	if method != "" {
-		return ReturnQuery(nil, "do not have query function: "+param, app.state.Height)
+		return ReturnQuery(nil, "do not have query function: "+param, app.state.db.Version64())
 		// return QueryRouter(method, param, app)
 	}
-	return ReturnQuery(nil, "method can't empty", app.state.Height)
+	return ReturnQuery(nil, "method can't empty", app.state.db.Version64())
 }
 
 func getEnv(key, defaultValue string) string {
@@ -250,10 +285,47 @@ func ReturnQuery(value []byte, log string, height int64) types.ResponseQuery {
 	return res
 }
 
+// func ReturnQuery(value []byte, log string, height int64, app *DIDApplication) types.ResponseQuery {
+// 	app.logger.Infof("Query reult: %s", string(value))
+// 	var res types.ResponseQuery
+// 	res.Value = value
+// 	res.Log = log
+// 	res.Height = height
+// 	return res
+// }
+
 // ReturnCheckTx return types.ResponseDeliverTx
 func ReturnCheckTx(ok bool) types.ResponseCheckTx {
 	if ok {
 		return types.ResponseCheckTx{Code: code.CodeTypeOK}
 	}
 	return types.ResponseCheckTx{Code: code.CodeTypeUnauthorized}
+}
+
+func identifyPanic() string {
+	var name, file string
+	var line int
+	var pc [16]uintptr
+
+	n := runtime.Callers(3, pc[:])
+	for _, pc := range pc[:n] {
+		fn := runtime.FuncForPC(pc)
+		if fn == nil {
+			continue
+		}
+		file, line = fn.FileLine(pc)
+		name = fn.Name()
+		if !strings.HasPrefix(name, "runtime.") {
+			break
+		}
+	}
+
+	switch {
+	case name != "":
+		return fmt.Sprintf("%v:%v", name, line)
+	case file != "":
+		return fmt.Sprintf("%v:%v", file, line)
+	}
+
+	return fmt.Sprintf("pc:%x", pc)
 }

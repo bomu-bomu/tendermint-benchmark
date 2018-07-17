@@ -103,6 +103,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
+  version = "v1.0.5"
+
+[[projects]]
   branch = "master"
   name = "github.com/syndtr/goleveldb"
   packages = [
@@ -138,6 +144,12 @@
   version = "0.10.1"
 
 [[projects]]
+  name = "github.com/tendermint/iavl"
+  packages = ["."]
+  revision = "35f66e53d9b01e83b30de68b931f54b2477a94c9"
+  version = "v0.9.2"
+
+[[projects]]
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/server",
@@ -160,7 +172,8 @@
     "openpgp/errors",
     "poly1305",
     "ripemd160",
-    "salsa20/salsa"
+    "salsa20/salsa",
+    "ssh/terminal"
   ]
   revision = "1a580b3eff7814fc9b40602fd35256c63b50f491"
 
@@ -181,7 +194,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
 
 [[projects]]
@@ -244,6 +260,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c7ec28e5f6cd4dd49ae0d4c351d1eae4d46109d2d2465151b8b0354604f70ce4"
+  inputs-digest = "38f68fea8d25505a3112d9d4ec25b11727ed80027be94ea9e7253afc8876b987"
   solver-name = "gps-cdcl"
   solver-version = 1
